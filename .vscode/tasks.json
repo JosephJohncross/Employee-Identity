@@ -1,0 +1,12 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "dotnet",
+			"task": "watch EmployeeIdentity.API",
+			"file": "/home/joe/Documents/Workspace/ASP/Suite of APIs/Employee Identity/src/API/EmployeeIdentity.API/EmployeeIdentity.API.csproj",
+			"problemMatcher": [],
+			"label": "dotnet: watch EmployeeIdentity.API"
+		}
+	]
+}

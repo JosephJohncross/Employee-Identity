@@ -13,7 +13,7 @@ public static class ProjectStartup
         services.AddEndpointsApiExplorer();
 
         services.AddApplicationServices();
-        services.AddInfrastructureService();
+        services.AddInfrastructureService(config);
         services.AddPersistenceService(config);
        
         services.AddHealthChecks()

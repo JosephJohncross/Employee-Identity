@@ -1,24 +1,35 @@
-using System.Net;
-using System.Net.Mail;
+using MailKit.Net.Smtp;
 using EmployeeIdentity.Application.Contracts.Infrastructure;
 using EmployeeIdentity.Application.Models.Mail;
 using Microsoft.Extensions.Options;
+using MimeKit;
+using MailKit.Security;
 
 namespace EmployeeIdentity.Infrastructure.Services.Mail;
 
 public class EmailService : IMail
 {
-
-    private readonly IOptions<SMTPParamterSettings> _smtpSettings;
-    public EmailService(IOptions<SMTPParamterSettings> smtpSettings) => _smtpSettings = smtpSettings;
+    private readonly SMTPParamterSettings _smtpSettings;
+    public EmailService(IOptions<SMTPParamterSettings> smtpSettings) => _smtpSettings = smtpSettings.Value;
 
     public async Task SendEmailAsync(SendEmailParameters emailParamters)
     {
-        var message = new MailMessage(emailParamters.From, emailParamters.To, emailParamters.Subject, emailParamters.Body);
+        var email = new MimeMessage(){
+            Subject = emailParamters.Subject,
+            To = {MailboxAddress.Parse(emailParamters.To)},
+            Body = new TextPart(MimeKit.Text.TextFormat.Html) {
+                Text = emailParamters.Body
+            },
+            From = { MailboxAddress.Parse(emailParamters.From)}
+        };
 
-        using var emailclient = new SmtpClient(_smtpSettings.Value.Host, _smtpSettings.Value.Port);
-        emailclient.Credentials = new NetworkCredential(_smtpSettings.Value.UserName, _smtpSettings.Value.Password);
+        using (var smtp = new SmtpClient()){
+            smtp.Connect(_smtpSettings.Host, _smtpSettings.Port, SecureSocketOptions.StartTls);
+            smtp.Authenticate(_smtpSettings.UserName, _smtpSettings.Password);
 
-        await emailclient.SendMailAsync(message);
+            var response = smtp.Send(email);
+            smtp.Disconnect(true);
+        }
+        
     }
 }

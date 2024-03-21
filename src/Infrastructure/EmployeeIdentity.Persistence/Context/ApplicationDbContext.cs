@@ -15,6 +15,6 @@ namespace EmployeeIdentity.Persistence.Context
 
         }
 
-        public DbSet<ApplicationUser> User { get; set; }
+        // public DbSet<ApplicationUser> User { get; set; }
     }
 }
